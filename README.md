@@ -1,7 +1,9 @@
 # Objeto_Polinomios
 
 El objeto Polinomio define un polinomio $P$ de la forma
+
 $$ P(x) = a_0  + a_1 x + a_2x² + \cdots + a_{n-1}x^{n-1} + a_n x^n,$$
+
 con $n$ el grado del polinomio y las $a_i$ los coeficientes. El módulo que se encuentra en la ruta `TOOLS/polinomial.py`, trabaja mediante el uso del módulo `numpy`, que se puede instalar usando la orden
 > ~~~
 > pip install numpy
@@ -21,9 +23,11 @@ donde los elementos de la misma serán los coeficientes del polinomio $a_0$, $a_
 De esta forma el objeto ya está construido.
 
 Para el uso de ejemplos en lineas posteriores, conviene definir algunos polinomios específicos. Definamos tres de ellos,
+
 $$P_1(x) = 1+x, \\
  P_2 (x)= -3 + 2x^2,\\
  P_3(x) = 2 + x -3x^2 $$
+
 que serán guardadas en las variables `p1`, `p2`y `p3`, respectivamente. Un archivo nombrado `main.py` que contenga estás definiciones comenzaría de las siguiente forma
 > ~~~
 > import TOOLS.polinomial as *
@@ -196,7 +200,9 @@ tanto por la izquierda como por la derecha.
 #### Composición
 
 En general, la **composición** de dos funciones, $f(x)$ y $g(x)$, se define como
+
 $$ (f \circ g)(x) = f\left(g(x)\right),$$
+
 donde la función resultante se denomina *función compuesta*. La composición es una operación algebraica que puede aplicarse también a los polinomios.
 
 Infortunadamente, el operador de la composición $\circ$,  no está definido en Python, por lo que se estará sobrecargando el operador `&` para este propósito. Dicho esto, aquí algunos ejemplos de composición,
