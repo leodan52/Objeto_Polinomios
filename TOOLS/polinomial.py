@@ -5,6 +5,10 @@ import numpy as np
 class Polinomio:
 
 	def __init__(self, lista):
+
+		''' Define un objeto polinomio en forma de serie de potencias. Está definida la suma (+)
+la resta (-), el producto (*) y la composición (&)'''
+
 		self.p = np.array(lista).astype(np.float64)
 		self.n = len(lista)
 		self.grado = self.p.size - 1
@@ -15,13 +19,14 @@ class Polinomio:
 	def __repr__(self):
 		return f'( {self.representacion} )'
 
+	# Definición de la operaciones del objeto
+
 	def __add__(self, other):
 
 		if not isinstance(other, Polinomio):
 			other = Polinomio.Nuevo_polinomio([other])
 
 		p1, p2, l = Polinomio.Igualar_len(self.p, other.p)
-
 		suma = p1 + p2
 
 		return Polinomio.Nuevo_polinomio(suma)
@@ -45,6 +50,7 @@ class Polinomio:
 		return self
 
 	def __mul__(self, other):
+
 		if not isinstance(other, Polinomio):
 			other = Polinomio.Nuevo_polinomio([other])
 
@@ -89,6 +95,8 @@ class Polinomio:
 
 		return salida
 
+	# Definición de métodos de extración de atributos
+
 	def __len__(self):
 		return self.grado
 
@@ -114,7 +122,12 @@ class Polinomio:
 
 		self.Representacion()
 
+	#-------------------------------------------------------
+
 	def Representacion(self):
+
+		# Construye la representación del objeto
+
 		entradas = Polinomio.Nume2strs(self.p)
 		salida = []
 		m = 0
@@ -150,25 +163,39 @@ class Polinomio:
 
 	@classmethod
 	def Nuevo_polinomio(cls, lista):
+
+		# Regresa un objeto del tipo Polinomio. Necesario para definir operaciones.
+
 		return cls(lista)
 
 	@classmethod
 	def Zero(cls):
+
+		# Regresa el objeto Polinomio 0, el neutro aditivo
+
 		return cls([0])
 
 	@classmethod
 	def Identity_producto(cls):
+
+		# Regresa el objeto Polinomio 1, la identidad, el neutro multiplcativo
+
 		return cls([1.0])
 
 	@classmethod
 	def Identity_composicion(cls):
+
+		# Regresa como objeto Polinomio la identidad o neutro de la composición
+
 		return cls([0, 1.0])
+
+	# Metodos para realizar operaciones dentro del módulo
 
 	@staticmethod
 	def Resta(a, b):
 		return a + (-b)
 
-	@staticmethod
+	@staticmethod.git
 	def Suma(a, b):
 		return a + b
 
@@ -180,12 +207,36 @@ class Polinomio:
 	def Potencia(a, n):
 		return a**n
 
+	# Métodos para la comparación
+
+	def __eq__(self, other):
+
+		if not isinstance(other, Polinomio):
+			other = Polinomio.Nuevo_polinomio([other])
+
+		p1, p2, l = Polinomio.Igualar_len(self.p, other.p)
+
+
+		return all(p1 == p2)
+
+	def __ne__(self, other):
+		return not (self == other)
+
+
+	# ---------------------------------------------------------------------------
+
 	@staticmethod
 	def Conmu(a,b):
+
+		# Se define el conmutador de la composición
+
 		return (a&b)-(b&a)
 
 	@staticmethod
 	def Igualar_len(p1_, p2_):
+
+		# Iguala la longitud de los vectores numpy para las operaciones
+
 		p1 = p1_.copy()
 		p2 = p2_.copy()
 
@@ -205,6 +256,9 @@ class Polinomio:
 
 	@staticmethod
 	def Nume2strs(Array):
+
+		# Convierte los datos númericos en strings. Herramienta para la representación
+
 		salida = []
 		for i in Array:
 			delta = abs(i - int(i))
@@ -222,6 +276,9 @@ class Polinomio:
 
 	@staticmethod
 	def Tensor_producto(jj,kk):
+
+		''' Contruye el tensor de jj x kk que define el producto polinomial '''
+
 		tensor = np.zeros((jj + kk -1, jj, kk))
 
 		for i in range(jj + kk -1):
