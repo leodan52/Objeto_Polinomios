@@ -122,6 +122,9 @@ la resta (-), el producto (*) y la composición (&)'''
 
 		self.Representacion()
 
+	def copy(self):
+		return Polinomio.Nuevo_polinomio(self.p.copy())
+
 	#-------------------------------------------------------
 
 	def Representacion(self):
