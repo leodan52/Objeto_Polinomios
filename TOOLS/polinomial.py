@@ -195,7 +195,7 @@ la resta (-), el producto (*) y la composición (&)'''
 	def Resta(a, b):
 		return a + (-b)
 
-	@staticmethod.git
+	@staticmethod
 	def Suma(a, b):
 		return a + b
 
