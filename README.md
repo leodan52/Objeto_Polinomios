@@ -24,9 +24,13 @@ De esta forma el objeto ya está construido.
 
 Para el uso de ejemplos en lineas posteriores, conviene definir algunos polinomios específicos. Definamos tres de ellos,
 
-$$P_1(x) = 1+x, \\
- P_2 (x)= -3 + 2x^2,\\
- P_3(x) = 2 + x -3x^2 $$
+$$
+\begin{eqnarray}
+	P_1(x) &=& 1+x, \\
+	P_2 (x) &=& -3 + 2x^2,\\
+	P_3(x) &=& 2 + x -3x^2
+\end{eqnarray}
+$$
 
 que serán guardadas en las variables `p1`, `p2`y `p3`, respectivamente. Un archivo nombrado `main.py` que contenga estás definiciones comenzaría de las siguiente forma
 > ~~~
