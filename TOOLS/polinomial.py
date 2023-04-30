@@ -1,50 +1,49 @@
-# Descripcion
 
 import numpy as np
 
 class Polinomio:
 
-	def __init__(self, lista):
-
-		''' Define un objeto polinomio en forma de serie de potencias. Está definida la suma (+)
+	''' Define un objeto polinomio en forma de serie de potencias. Está definida la suma (+)
 la resta (-), el producto (*) y la composición (&)'''
 
-		self.p = np.array(lista).astype(np.float64)
-		self.n = len(lista)
-		self.grado = self.p.size - 1
-		self.representacion = ""
+	def __init__(self, lista, ordenDescendente = False):
 
-		self.Representacion()
+		self.__vector = np.array(lista).astype(np.float64)
+		self.__grado = self.__vector.size - 1
+		self.__representacion = ""
+		self.__ordenDescendente = ordenDescendente
+
+		self.__toString()
 
 	def __repr__(self):
-		return f'( {self.representacion} )'
+		return f'( {self.__representacion} )'
 
-	# Definición de la operaciones del objeto
+	# ------------ Definición de la operaciones del objeto ---------------------------------
 
 	def __add__(self, other):
 
 		if not isinstance(other, Polinomio):
-			other = Polinomio.Nuevo_polinomio([other])
+			other = Polinomio.__Nuevo_polinomio([other])
 
-		p1, p2, l = Polinomio.Igualar_len(self.p, other.p)
+		p1, p2, l = Polinomio.__Igualar_len(self.__vector, other.__vector)
 		suma = p1 + p2
 
-		return Polinomio.Nuevo_polinomio(suma)
+		return Polinomio.__Nuevo_polinomio(suma)
 
 	def __radd__(self, other):
-		return Polinomio.Suma(self, other)
+		return Polinomio.__Sumar(self, other)
 
 	def __sub__(self, other):
-		return Polinomio.Resta(self, other)
+		return Polinomio.__Restar(self, other)
 
 	def __rsub__(self, other):
-		return Polinomio.Resta(self, other)
+		return Polinomio.__Restar(self, other)
 
 	def __neg__(self):
-		aux = self.p.copy()
+		aux = self.__vector.copy()
 		aux = (-1)*aux
 
-		return Polinomio.Nuevo_polinomio(aux)
+		return Polinomio.__Nuevo_polinomio(aux)
 
 	def __pos__(self):
 		return self
@@ -52,16 +51,16 @@ la resta (-), el producto (*) y la composición (&)'''
 	def __mul__(self, other):
 
 		if not isinstance(other, Polinomio):
-			other = Polinomio.Nuevo_polinomio([other])
+			other = Polinomio.__Nuevo_polinomio([other])
 
-		p1, p2, l = Polinomio.Igualar_len(self.p, other.p)
+		p1, p2, l = Polinomio.__Igualar_len(self.__vector, other.__vector)
 		Tensor = Polinomio.Tensor_producto(l,l)
 		salida = np.einsum('ijk,j,k -> i',Tensor,p1,p2)
 
-		return Polinomio.Nuevo_polinomio(salida)
+		return Polinomio.__Nuevo_polinomio(salida)
 
 	def __rmul__(self, other):
-		return Polinomio.Producto(self, other)
+		return Polinomio.__Multiplicar(self, other)
 
 	def __pow__(self, n_):
 		if not isinstance(n_, int):
@@ -69,16 +68,16 @@ la resta (-), el producto (*) y la composición (&)'''
 		elif n_ < 0:
 			raise TypeError(f'El exponente es negativo. Aún no se define')
 		elif n_ == 0:
-			return Polinomio.Identity_producto()
+			return Polinomio.One()
 		elif n_ == 1:
 			return self
 
-		Tensor = Polinomio.Tensor_producto(self.n, self.n)
-		salida = Polinomio.Nuevo_polinomio(self.p.copy())
+		Tensor = Polinomio.Tensor_producto(self.__grado + 1, self.__grado + 1)
+		salida = Polinomio.__Nuevo_polinomio(self.__vector.copy())
 		m = 1
 
 		while m < n_:
-			salida = Polinomio.Producto(salida, self)
+			salida = Polinomio.__Multiplicar(salida, self)
 			m += 1
 
 		return salida
@@ -86,23 +85,23 @@ la resta (-), el producto (*) y la composición (&)'''
 	def __and__(self, other):
 		m = 0
 		salida = 0
-		for a in self.p:
-			aux0 = Polinomio.Potencia(other, m)
-			aux = Polinomio.Producto(aux0, a)
-			salida = Polinomio.Suma(aux, salida)
+		for a in self.__vector:
+			aux0 = Polinomio.__Potenciar(other, m)
+			aux = Polinomio.__Multiplicar(aux0, a)
+			salida = Polinomio.__Sumar(aux, salida)
 
 			m += 1
 
 		return salida
 
-	# Definición de métodos de extración de atributos
+	#----------------- Definición de métodos de extracción de atributos ------------------------------
 
 	def __len__(self):
-		return self.grado
+		return self.__grado
 
 	def __getitem__(self, n):
 		try:
-			return self.p[n]
+			return self.__vector[n]
 		except IndexError:
 			return 0
 
@@ -111,27 +110,40 @@ la resta (-), el producto (*) y la composición (&)'''
 		if not isinstance(nuevo, int) and not isinstance(nuevo, float):
 			raise TypeError(f'Debe ser un número real, no un {type(nuevo)}')
 		try:
-			self.p[n] = nuevo
+			self.__vector[n] = nuevo
 		except IndexError:
 			aux = np.zeros(n+1)
-			self.p, aux, ll =  Polinomio.Igualar_len(self.p, aux)
-			self.p[n] = nuevo
+			self.__vector, aux, ll =  Polinomio.__Igualar_len(self.__vector, aux)
+			self.__vector[n] = nuevo
 
-		while self.p[-1] == 0:
-			self.p = np.delete(self.p, -1)
+		while self.__vector[-1] == 0:
+			self.__vector = np.delete(self.__vector, -1)
 
-		self.Representacion()
+		self.__toString()
 
 	def copy(self):
-		return Polinomio.Nuevo_polinomio(self.p.copy())
+		return Polinomio.__Nuevo_polinomio(self.__vector.copy())
+
+	def OrdenarAscendente(self):
+
+		self.__ordenDescendente = False
+
+		self.__toString()
+
+	def OrdenarDescendente(self):
+
+		self.__ordenDescendente = True
+
+		self.__toString()
+
 
 	#-------------------------------------------------------
 
-	def Representacion(self):
+	def __toString(self):
 
-		# Construye la representación del objeto
+		''' Construye la representación del polinomio '''
 
-		entradas = Polinomio.Nume2strs(self.p)
+		entradas = Polinomio.__Num2strg(self.__vector)
 		salida = []
 		m = 0
 
@@ -151,7 +163,10 @@ la resta (-), el producto (*) y la composición (&)'''
 				salida.append(aux)
 			m += 1
 
-		salida = "".join(salida)
+		if self.__ordenDescendente:
+			salida = "".join(salida[::-1])
+		else:
+			salida = "".join(salida)
 
 		if salida == "":
 			salida = "0"
@@ -161,63 +176,63 @@ la resta (-), el producto (*) y la composición (&)'''
 		salida = salida.replace("+", " + ")
 		salida = salida.replace("-", " - ")
 
-		self.representacion = salida.strip()
+		self.__representacion = salida.strip()
 
 
 	@classmethod
-	def Nuevo_polinomio(cls, lista):
+	def __Nuevo_polinomio(cls, lista):
 
-		# Regresa un objeto del tipo Polinomio. Necesario para definir operaciones.
+		'''Regresa un objeto del tipo Polinomio. Necesario para definir operaciones. '''
 
 		return cls(lista)
 
 	@classmethod
 	def Zero(cls):
 
-		# Regresa el objeto Polinomio 0, el neutro aditivo
+		'''Retorna el objeto Polinomio 0, el neutro aditivo '''
 
 		return cls([0])
 
 	@classmethod
-	def Identity_producto(cls):
+	def One(cls):
 
-		# Regresa el objeto Polinomio 1, la identidad, el neutro multiplcativo
+		'''Regresa el objeto Polinomio 1, la identidad, el neutro multiplcativo '''
 
 		return cls([1.0])
 
 	@classmethod
 	def Identity_composicion(cls):
 
-		# Regresa como objeto Polinomio la identidad o neutro de la composición
+		''' Regresa como objeto Polinomio la identidad o neutro de la composición '''
 
 		return cls([0, 1.0])
 
-	# Metodos para realizar operaciones dentro del módulo
+	# ---------- Metodos para realizar operaciones dentro del módulo --------------------------------
 
 	@staticmethod
-	def Resta(a, b):
+	def __Restar(a, b):
 		return a + (-b)
 
 	@staticmethod
-	def Suma(a, b):
+	def __Sumar(a, b):
 		return a + b
 
 	@staticmethod
-	def Producto(a, b):
+	def __Multiplicar(a, b):
 		return a*b
 
 	@staticmethod
-	def Potencia(a, n):
+	def __Potenciar(a, n):
 		return a**n
 
-	# Métodos para la comparación
+	# ------------------- Métodos para la comparación -------------------------------------------
 
 	def __eq__(self, other):
 
 		if not isinstance(other, Polinomio):
-			other = Polinomio.Nuevo_polinomio([other])
+			other = Polinomio.__Nuevo_polinomio([other])
 
-		p1, p2, l = Polinomio.Igualar_len(self.p, other.p)
+		p1, p2, l = Polinomio.__Igualar_len(self.__vector, other.__vector)
 
 
 		return all(p1 == p2)
@@ -226,19 +241,19 @@ la resta (-), el producto (*) y la composición (&)'''
 		return not (self == other)
 
 
-	# ---------------------------------------------------------------------------
+	# ------------------- Métodos estáticos del la clase --------------------------------------
 
 	@staticmethod
 	def Conmu(a,b):
 
-		# Se define el conmutador de la composición
+		'''Se define el conmutador de la composición '''
 
 		return (a&b)-(b&a)
 
 	@staticmethod
-	def Igualar_len(p1_, p2_):
+	def __Igualar_len(p1_, p2_):
 
-		# Iguala la longitud de los vectores numpy para las operaciones
+		''' Iguala la longitud de los vectores numpy para las operaciones '''
 
 		p1 = p1_.copy()
 		p2 = p2_.copy()
@@ -258,9 +273,9 @@ la resta (-), el producto (*) y la composición (&)'''
 
 
 	@staticmethod
-	def Nume2strs(Array):
+	def __Num2strg(Array):
 
-		# Convierte los datos númericos en strings. Herramienta para la representación
+		'''Convierte los datos numéricos en strings. Herramienta para la representación '''
 
 		salida = []
 		for i in Array:
