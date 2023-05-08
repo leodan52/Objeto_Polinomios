@@ -16,9 +16,9 @@ la resta (-), el producto (*) y la composición (&)'''
 		self.__toString()
 
 	def __repr__(self):
-		return f'( {self.__representacion} )'
+		return f'{self.__representacion}'
 
-	# ------------ Definición de la operaciones del objeto ---------------------------------
+	# ------------ Definición de las operaciones del objeto ---------------------------------
 
 	def __add__(self, other):
 
@@ -93,6 +93,15 @@ la resta (-), el producto (*) y la composición (&)'''
 			m += 1
 
 		return salida
+
+	def evaluar(self, x):
+		salida = 0
+
+		for exponente in range(self.__grado + 1):
+			salida += self.__vector[exponente]*(x**exponente)
+
+		return salida
+
 
 	#----------------- Definición de métodos de extracción de atributos ------------------------------
 
