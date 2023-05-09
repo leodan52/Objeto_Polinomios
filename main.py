@@ -67,4 +67,34 @@ Ejemplos:'''
 	print(Polinomio.Identity_composicion() & tupla[0])
 	print(Polinomio.Tensor_producto(2,2))
 
+	print("\n\n")
+	test = Polinomio([5,4,3])
+	base0 = Polinomio([1,0,1])
+	base1 = Polinomio([1,0,-1])
+	base2 = Polinomio([0,1,2])
+
+	print(f'Sea P = {test} un polinomio representado en la base estandar')
+	print(f'Y una base alternativa representada por los polinomios')
+	print(f'b1 = {base0}')
+	print(f'b2 = {base1}')
+	print(f'b3 = {base2}')
+
+	coeficientes = Polinomio.CambioBase(test, base0, base1, base2)
+	
+	result = coeficientes[0]*base0 + coeficientes[1]*base1 + coeficientes[2]*base2
+
+	print(f'P puede ser representado en la base b de la siguiente manera')
+	print(f'P = {coeficientes[0]}*b1 + {coeficientes[1]}*b2 + {coeficientes[2]}*b3')
+	print("")
+	print(f'Si se realiza las operaciones se obtiene: P = {result}')
+	print("")
+
+
+
+
+
+
+
+
+
 main()

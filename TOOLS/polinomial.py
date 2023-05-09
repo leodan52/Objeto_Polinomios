@@ -145,6 +145,17 @@ la resta (-), el producto (*) y la composición (&)'''
 
 		self.__toString()
 
+	def lista(self):
+		return [coeficiente for coeficiente in(self.__vector if not self.__ordenDescendente else self.__vector[::-1])]
+
+	@property
+	def ordenDescendente(self):
+		return self.__ordenDescendente
+
+	@ordenDescendente.setter
+	def ordenDescendente(self, desendente):
+		self.__ordenDescendente = desendente
+
 
 	#-------------------------------------------------------
 
@@ -314,3 +325,39 @@ la resta (-), el producto (*) y la composición (&)'''
 					if i == j + k:
 						tensor[i,j,k] = 1
 		return tensor
+
+
+
+
+	@staticmethod
+	def CambioBase(poli, *base):
+		gradoPolinomio = len(poli)
+		gradoBase = 0
+
+		#Obtiene el grado de la base
+		for vector in base:	
+			if len(vector) > gradoBase:
+				gradoBase = len(vector)
+		
+
+		if gradoPolinomio > gradoBase:
+			raise ValueError("El grado de la base debe de ser igual o mayor que el del polinomio")
+
+
+		estandar2base = np.zeros((gradoBase+1, len(base)))
+		listaPolinomio = poli.lista() if not poli.ordenDescendente else poli.lista()[::-1]
+		candidato = np.zeros(gradoBase+1)
+		candidato[:len(listaPolinomio)] = listaPolinomio
+
+		for i in range(len(base)):
+			coef = base[i].lista()
+			# Si el vector está en orden descendente lo "endereza"
+			if(base[i].ordenDescendente):
+				coef = coef[::-1]
+
+			estandar2base[:len(coef), i] = coef
+
+		base2estandar = np.linalg.inv(estandar2base)
+		newCoef = np.matmul(base2estandar, candidato)
+
+		return newCoef.tolist()
