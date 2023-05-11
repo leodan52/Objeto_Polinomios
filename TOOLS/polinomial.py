@@ -139,7 +139,7 @@ class Polinomio:
 
         self.__toString()
 
-    def lista(self):
+    def coeficientes(self):
         return [
             coeficiente
             for coeficiente in (
@@ -154,6 +154,7 @@ class Polinomio:
     @ordenDescendente.setter
     def ordenDescendente(self, desendente):
         self.__ordenDescendente = desendente
+        self.__toString()
 
     # -------------------------------------------------------
 
@@ -327,13 +328,13 @@ class Polinomio:
 
         estandar2base = np.zeros((gradoBase + 1, len(base)))
         listaPolinomio = (
-            poli.lista() if not poli.ordenDescendente else poli.lista()[::-1]
+            poli.coeficientes() if not poli.ordenDescendente else poli.coeficientes()[::-1]
         )
         candidato = np.zeros(gradoBase + 1)
         candidato[: len(listaPolinomio)] = listaPolinomio
 
         for i in range(len(base)):
-            coef = base[i].lista()
+            coef = base[i].coeficientes()
             # Si el vector está en orden descendente lo "endereza"
             if base[i].ordenDescendente:
                 coef = coef[::-1]
@@ -346,28 +347,27 @@ class Polinomio:
         return newCoef.tolist()
 
     @staticmethod
-    def ortogonalizar(
-        base,
-        normalizar=True,
-        productoInterno=lambda a, b: Polinomio.productoInternoIntegral(a, b),
-    ):
-        nuevaBase = (
-            [base[0] * (1 / productoInterno(base[0], base[0]))]
-            if normalizar
-            else [base[0]]
-        )
+    def ortogonalizar( base, normalizar=False, productoInterno=lambda a, b: Polinomio.productoInternoIntegral(a, b) ):
+        
+        nuevaBase = [base[0]]
+        
+        #Procedimiento de Gram-Schmidt
         for i in range(1, len(base)):
             candidato = base[i]
             for j in range(i):
-                candidato -= Polinomio.__proj(nuevaBase[j], base[i])
+                candidato -= Polinomio.__proj(nuevaBase[j], base[i], productoInterno)
+            
+            nuevaBase.append(candidato)
+
+        if normalizar:
+            nuevaBase = [base * (1/productoInterno(base, base))**(1/2) for base in nuevaBase]    
 
         return nuevaBase
 
     @staticmethod
-    def productoInternoIntegral(
-        a, b, limiteInferior=-1, limiteSuperior=1, ponderacion=lambda x: 1
-    ):
+    def productoInternoIntegral( a, b, limiteInferior=-1, limiteSuperior=1, ponderacion=lambda x: 1 ):
         polinomioInterno = a * b
+        
         resultado = integrate.quad(
             lambda x: polinomioInterno.evaluar(x) * ponderacion(x),
             limiteInferior,
@@ -378,4 +378,4 @@ class Polinomio:
 
     @staticmethod
     def __proj(u, v, producto):
-        return v * (producto(v, u) / producto(u, u))
+        return u * (producto(v, u) / producto(u, u))

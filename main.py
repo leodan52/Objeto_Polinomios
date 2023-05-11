@@ -1,6 +1,8 @@
 # Descripción
 
 from TOOLS.polinomial import *
+import numpy as np
+import math
 
 
 def main():
@@ -89,14 +91,62 @@ Ejemplos:"""
     print("")
     print("")
 
+
     base1 = Polinomio([1])
     base2 = Polinomio([0, 1])
     base3 = Polinomio([0, 0, 1])
     base4 = Polinomio([0, 0, 0, 1])
+    base5 = Polinomio([0, 0, 0, 0, 1])
 
-    ortonormal = Polinomio.ortogonalizar([base1, base2, base3, base4])
+    print("Pariendo de los polinomios")
+    print(f'b1 = {base1}')
+    print(f'b2 = {base2}')
+    print(f'b3 = {base3}')
+    print(f'b4 = {base4}')
+    print(f'b5 = {base5}')
+    print("Podemos encontrar los polinomios de Hermite aplicando el procedimiento de ortogonalización de Gram-Schmidt")
+    print("con el producto interno <p,q> = ∫p(x)q(x)exp(-(x^2)/2)dx desde -∞ hasta ∞")
 
-    print(ortonormal)
+
+    ponderacion = lambda x : math.exp(-(x**2)/2)
+    productoInterno = lambda a,b : Polinomio.productoInternoIntegral(a, b, -np.Inf, np.Inf, ponderacion)
+
+    ortogonal = Polinomio.ortogonalizar([base1, base2, base3, base4, base5], productoInterno=productoInterno)
+    
+    for i in range(len(ortogonal)):
+        ortogonal[i].ordenDescendente = True
+
+    print(f'H0 = {ortogonal[0]}')
+    print(f'H1 = {ortogonal[1]}')
+    print(f'H2 = {ortogonal[2]}')
+    print(f'H3 = {ortogonal[3]}')
+    print(f'H4 = {ortogonal[4]}')
+    print("")
+
+    #Checa ortogonalidad
+    # print(productoInterno(ortogonal[0], ortogonal[1]))  # == 0
+    # print(productoInterno(ortogonal[0], ortogonal[2]))  # == 0
+    # print(productoInterno(ortogonal[0], ortogonal[3]))  # == 0
+    # print(productoInterno(ortogonal[0], ortogonal[4]))  # == 0
+
+    # print(productoInterno(ortogonal[1], ortogonal[2]))  # == 0
+    # print(productoInterno(ortogonal[1], ortogonal[3]))  # == 0
+    # print(productoInterno(ortogonal[1], ortogonal[4]))  # == 0
+
+    # print(productoInterno(ortogonal[2], ortogonal[3]))  # == 0
+    # print(productoInterno(ortogonal[2], ortogonal[4]))  # == 0
+
+    # print(productoInterno(ortogonal[3], ortogonal[4]))  # == 0
+
+    # print("")
+    # print(productoInterno(ortogonal[0], ortogonal[0]))  # != 0
+    # print(productoInterno(ortogonal[1], ortogonal[1]))  # != 0
+    # print(productoInterno(ortogonal[2], ortogonal[2]))  # != 0
+    # print(productoInterno(ortogonal[3], ortogonal[3]))  # != 0
+    # print(productoInterno(ortogonal[4], ortogonal[4]))  # != 0
+
+
+
 
 
 main()

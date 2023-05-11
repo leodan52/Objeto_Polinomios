@@ -4,9 +4,9 @@ El objeto Polinomio define un polinomio $P$ de la forma
 
 $$ P(x) = a_0  + a_1 x + a_2x² + \cdots + a_{n-1}x^{n-1} + a_n x^n,$$
 
-con $n$ el grado del polinomio y las $a_i$ los coeficientes. El módulo que se encuentra en la ruta `TOOLS/polinomial.py`, trabaja mediante el uso del módulo `numpy`, que se puede instalar usando la orden
+con $n$ el grado del polinomio y las $a_i$ los coeficientes. El módulo que se encuentra en la ruta `TOOLS/polinomial.py`, trabaja mediante el uso del módulo `scipy`, que se puede instalar usando la orden
 > ~~~
-> pip install numpy
+> pip install scipy
 > ~~~
 en la terminal.
 
@@ -18,9 +18,11 @@ La sintaxis del módulo es muy simple. Comienza definiendo una lista de la sigui
 >  ~~~
 donde los elementos de la misma serán los coeficientes del polinomio $a_0$, $a_1$, $a_2$, $\dots$, $a_n$, respectivamente. Esta lista se usará como argumento del constructor
 > ~~~
-> p = polinomial.Polinomio(lista)
+> p = polinomial.Polinomio(lista [, ordenDescendente])
 > ~~~
 De esta forma el objeto ya está construido.
+
+El parámetro opcional `ordenDescendente` es un booleano que determina el orden en el que se imprime el polinomio, así como el orden de los coeficientes del método `coeficientes()`. Su valor por defecto es `False`
 
 Para el uso de ejemplos en lineas posteriores, conviene definir algunos polinomios específicos. Definamos tres de ellos,
 
@@ -122,6 +124,44 @@ O bien,
 > ( 1 + x )
  > ~~~
  de esta forma se puede modificar el nuevo polinomio, sin modificar al original.
+
+#### Evaluar un polinomio
+
+Evalúa el polinomio en un punto dado. Por ejemplo,
+> ~~~
+> >>> p1.evaluar(0)
+> >>> 1
+> ( 1 + x )
+> >>> p4.evaluar(2)
+> >>> -5
+> ( 1 + x - x^3 )
+> ~~~
+
+#### Coeficientes
+
+Regresa una lista con los coeficientes del polinomio, el orden de la lista es afectado por el valor de `ordenDescendente`. Por ejemplo,
+> ~~~
+> >>> p1.coeficientes()
+> >>> [1, 1]
+> ( 1 + x )
+> >>> p2.coeficientes()
+> >>> [-3, 0, 2]
+> ( - 3 + 2x^2 )
+> ~~~
+
+#### Ordenación del polinomio
+El orden del polinomio se puede modificar de diferentes maneras, como por ejemplo usando el metodo `OrdenarAscendente()` que establece el valor de `ordenDescendente` en `False`.
+
+O el metodo `OrdenarDescendente()` que establece su valor en `True`
+
+Alternativamente se puede usar la propiedad `ordenDescendente` para leer o establecer directamente su valor, por ejemplo,
+> ~~~
+> >>> p2.coeficientes()
+> >>> [-3, 0, 2]
+> >>> p2.ordenDescendente = True
+> >>> p2.coeficientes()
+> >>> [2, 0, -3]
+> ~~~
 
 ### Comparación de polinomios
 
@@ -239,5 +279,28 @@ Ya que es un método estático, lo debe anteceder siempre el nombre de la clase.
 #### Jerarquía de operaciones
 
 La jerarquía de las operaciones básicas es la misma que viene definida en Python: paréntesis, multiplicación, suma (y resta). El problema viene con la composición, qué matemáticamente tiene prioridad antes de la suma y resta, pero que al relacionarla al operador `&`, esto se invierte. En otras palabras, para siempre obtener los resultados esperados, hay que considera el orden como: paréntesis, multiplicación, suma (y resta) y al final composición.
+
+#### Cambio de base
+
+Los polinomios, junto con la suma de polinomios y la multiplicación por un escalar, pueden entenderse como un espacio vectorial y por ende puede ser definida una base de polinomios que generen todo el espacio. Por ejemplo.
+
+Tomemos el conjunto de todos los polinomios de rango 2, estos polinomios tienen la forma
+
+$$ P_2(x) = a_0  + a_1 x + a_2x² $$
+
+Si tomamos como base los polinomios:
+
+$$
+\begin{eqnarray}
+	\epsilon_1(x) &=& 1, \\
+	\epsilon_2 (x) &=& x,\\
+	\epsilon_3(x) &=& x^2
+\end{eqnarray}
+$$
+
+Podemos ver que el polinomio $P_2(x)$ es una combinación lineal de esta base, pudiendo ser representado por el vector 
+
+$$ P_2 = [a_0, a_1, a_2]$$
+___
 
 [^1]:  Commutator, Wikipedia, <https://en.wikipedia.org/wiki/Commutator>
