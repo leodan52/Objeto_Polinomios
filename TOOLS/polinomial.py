@@ -238,8 +238,8 @@ class Polinomio:
     def __Potenciar(a, n):
         return a**n
 
-    # ------------------- Métodos para la comparación -------------------------------------------
-
+    # ------------------- Métodos para la comparación ------------------------------------------
+    
     def __eq__(self, other):
         if not isinstance(other, Polinomio):
             other = Polinomio.__Nuevo_polinomio([other])
@@ -250,6 +250,10 @@ class Polinomio:
 
     def __ne__(self, other):
         return not (self == other)
+      
+      
+    def __lt__(self, other):
+        return self.__vector[0] < other.__vector[0]
 
     # ------------------- Métodos estáticos del la clase --------------------------------------
 
