@@ -4,9 +4,9 @@ El objeto Polinomio define un polinomio $P$ de la forma
 
 $$ P(x) = a_0  + a_1 x + a_2x² + \cdots + a_{n-1}x^{n-1} + a_n x^n,$$
 
-con $n$ el grado del polinomio y las $a_i$ los coeficientes. El módulo que se encuentra en la ruta `TOOLS/polinomial.py`, trabaja mediante el uso del módulo `numpy`, que se puede instalar usando la orden
+con $n$ el grado del polinomio y las $a_i$ los coeficientes. El módulo que se encuentra en la ruta `TOOLS/polinomial.py`, trabaja mediante el uso del módulo `scipy`, que se puede instalar usando la orden
 > ~~~
-> pip install numpy
+> pip install scipy
 > ~~~
 en la terminal.
 
@@ -18,9 +18,11 @@ La sintaxis del módulo es muy simple. Comienza definiendo una lista de la sigui
 >  ~~~
 donde los elementos de la misma serán los coeficientes del polinomio $a_0$, $a_1$, $a_2$, $\dots$, $a_n$, respectivamente. Esta lista se usará como argumento del constructor
 > ~~~
-> p = polinomial.Polinomio(lista)
+> p = polinomial.Polinomio(lista [, ordenDescendente])
 > ~~~
 De esta forma el objeto ya está construido.
+
+El parámetro opcional `ordenDescendente` es un booleano que determina el orden en el que se imprime el polinomio, así como el orden de los coeficientes del método `coeficientes()`. Su valor por defecto es `False`
 
 Para el uso de ejemplos en lineas posteriores, conviene definir algunos polinomios específicos. Definamos tres de ellos,
 
@@ -122,6 +124,44 @@ O bien,
 > ( 1 + x )
  > ~~~
  de esta forma se puede modificar el nuevo polinomio, sin modificar al original.
+
+#### Evaluar un polinomio
+
+Evalúa el polinomio en un punto dado. Por ejemplo,
+> ~~~
+> >>> p1.evaluar(0)
+> >>> 1
+> ( 1 + x )
+> >>> p4.evaluar(2)
+> >>> -5
+> ( 1 + x - x^3 )
+> ~~~
+
+#### Coeficientes
+
+Regresa una lista con los coeficientes del polinomio, el orden de la lista es afectado por el valor de `ordenDescendente`. Por ejemplo,
+> ~~~
+> >>> p1.coeficientes()
+> >>> [1, 1]
+> ( 1 + x )
+> >>> p2.coeficientes()
+> >>> [-3, 0, 2]
+> ( - 3 + 2x^2 )
+> ~~~
+
+#### Ordenación del polinomio
+El orden del polinomio se puede modificar de diferentes maneras, como por ejemplo usando el metodo `OrdenarAscendente()` que establece el valor de `ordenDescendente` en `False`.
+
+O el metodo `OrdenarDescendente()` que establece su valor en `True`
+
+Alternativamente se puede usar la propiedad `ordenDescendente` para leer o establecer directamente su valor, por ejemplo,
+> ~~~
+> >>> p2.coeficientes()
+> >>> [-3, 0, 2]
+> >>> p2.ordenDescendente = True
+> >>> p2.coeficientes()
+> >>> [2, 0, -3]
+> ~~~
 
 ### Comparación de polinomios
 
@@ -240,4 +280,130 @@ Ya que es un método estático, lo debe anteceder siempre el nombre de la clase.
 
 La jerarquía de las operaciones básicas es la misma que viene definida en Python: paréntesis, multiplicación, suma (y resta). El problema viene con la composición, qué matemáticamente tiene prioridad antes de la suma y resta, pero que al relacionarla al operador `&`, esto se invierte. En otras palabras, para siempre obtener los resultados esperados, hay que considera el orden como: paréntesis, multiplicación, suma (y resta) y al final composición.
 
+#### Cambio de base
+
+Los polinomios, junto con la suma de polinomios y la multiplicación por un escalar, pueden entenderse como un espacio vectorial y por ende puede ser definida una base de polinomios que generen todo el espacio. Por ejemplo.
+
+Tomemos el conjunto de todos los polinomios de rango 2, estos polinomios tienen la forma
+
+$$ P_2(x) = a_0  + a_1 x + a_2x² $$
+
+Si tomamos como base los polinomios:
+
+$$
+\begin{eqnarray}
+	\epsilon_1 &=& 1, \\
+	\epsilon_2 &=& x,\\
+	\epsilon_3 &=& x^2
+\end{eqnarray}
+$$
+
+Podemos ver que el polinomio $P_2(x)$ es una combinación lineal de esta base, pudiendo ser representado por el vector 
+
+$$ P_2 = [a_0, a_1, a_2]$$
+
+La función `CambioBase()` permite obtener la representación de un polinomio dado en una base arbitraria.
+
+> ~~~
+> coeficientes = Polinomio.CambioBase(polinomio, base1, base2, ...)
+> ~~~
+
+Es importante notar que el rango del polinomio debe de ser igual o menor que el rango de la base. El rango de la base es igual al mayor de los rangos entre los polinomios que la conforman.
+
+Además, los polinomios de la base deben de ser lienalmente independientes, veamos un ejemplo,
+
+> ~~~
+> >>> p = Polinomio([5, 4, 3])
+> ( 5 + 4x + 3x^2)
+> >>> base0 = Polinomio([1, 0, 1])
+> ( 1 + x^2)
+> >>> base1 = Polinomio([1, 0, -1])
+> ( 1 - x^2)
+> >>> base2 = Polinomio([0, 1, 2])
+> ( x + 2x^2)
+> >>> coef = Polinomio.CambioBase(p, base0, base1, base2)
+> [ 0.0, 5.0, 4.0 ]
+> >>> coef[0]*base0 + coef[1]*base1 + coef[2]*base2
+> ( 5 + 4x + 3x^2)
+> ~~~
+
+#### Ortogonalizacion
+
+Dada una base de polinomios arbitraria, se puede obtener otra base ortogonal (u ortonormal) utilizando la función `ortogonalizar()`
+
+> ~~~
+> ortogonales = Polinomio.ortogonalizar(base [, normalizar [, productoInterno]])
+> ~~~
+
+`base` es una lista con los polinomios de la base a ortogonalizar, el parámetro opcional `normalizar` es un booleano que determina si la base ortogonal obtenida será normalizada, su valor por defecto es `False`.
+
+El parámetro opcional `productoInterno` debe de ser una función que tome como argumento dos polinomios y regrese su producto interno, la ortogonalidad de la base se define con respecto de este producto interno, su valor por defecto es una fucion que cumple:
+
+$$ <p,q> = \int_{-1}^{1}p(x)q(x)dx$$
+
+Veamos un ejemplo,
+
+Sean los polinomios de la base 
+
+$$
+\begin{eqnarray}
+	base_0 &=& 1, \\
+	base_1 &=& x, \\
+	base_2 &=& x^2 \\
+	base_3 &=& x^3 \\
+	base_4 &=& x^4 
+\end{eqnarray}
+$$
+
+y un producto interno
+
+$$ <p,q> = \int_{-\infty}^{\infty}p(x)q(x)e^{-\frac{x^2}{2}}dx $$
+
+Podemos obtener un set de polinomios ortogonales
+
+> ~~~
+> >>> base0 = Polinomio([1])
+> ( 1 )
+> >>> base1 = Polinomio([0, 1])
+> ( x )
+> >>> base2 = Polinomio([0, 0, 1])
+> ( x^2 )
+> >>> base3 = Polinomio([0, 0, 0, 1])
+> ( x^3 )
+> >>> base4 = Polinomio([0, 0, 0, 0, 1])
+> ( x^4 )
+> >>> base = [base0, base1, base2, base3, base4]
+> >>> peso = lambda x: math.exp(-(x**2) / 2)
+> >>> productoInterno = lambda a, b: Polinomio.productoInternoIntegral(a, b, -np.Inf, np.Inf, ponderacion)
+> >>> ortogonales = Polinomio.ortogonalizar(base, False, productoInterno)
+> [ 1, x, -1 + x^2, -3x + x^3, 3 - 6x^2 + x^4 ]
+> ~~~
+
+En este ejemplo los polinomios obtenidos corresponden con los primeros cinco polinomios de Hermite[^2]
+
+$$
+\begin{eqnarray}
+	H_0(x) &=& 1, \\
+	H_1(x) &=& x, \\
+	H_2(x) &=& x^2 - 1 \\
+	H_3(x) &=& x^3 - 3x  \\
+	H_4(x) &=& x^4 - 6x^2 + 3
+\end{eqnarray}
+$$
+
+#### Producto Interno
+
+El módulo incluye una función para calcular el producto interno entre polinomios de la forma
+
+$$ <p,q> = \int_{a}^{b}p(x)q(x)\omega(x)dx $$
+
+La función permite modificar tanto los límites de integración como la función de ponderación $\omega(x)$
+
+> ~~~
+> producto = Polinomio.productoInternoIntegral(p, q [, limiteInferior [, limiteSuperior [, ponderacion]]])
+> ~~~
+
+En este caso `p` y `q` son los polinomios sobre los cuales se va a operar, `limiteInferior` y `limiteSuperior` son los límites de integración, su valor por defecto es `-1` y `1` respectivamente y `ponderacion` debe de ser una función que toma por argumento un número y regresa un número real, su valor por defecto es $\omega(x)=1$
+
 [^1]:  Commutator, Wikipedia, <https://en.wikipedia.org/wiki/Commutator>
+[^2]:  Hermite polynomials, Wikipedia, <https://en.wikipedia.org/wiki/Hermite_polynomials>
