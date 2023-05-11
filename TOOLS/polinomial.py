@@ -243,11 +243,13 @@ la resta (-), el producto (*) y la composición (&)'''
 
 		p1, p2, l = Polinomio.__Igualar_len(self.__vector, other.__vector)
 
-
 		return all(p1 == p2)
 
 	def __ne__(self, other):
 		return not (self == other)
+
+	def __lt__(self, other):
+		return self.__vector[0] < other.__vector[0]
 
 
 	# ------------------- Métodos estáticos del la clase --------------------------------------
