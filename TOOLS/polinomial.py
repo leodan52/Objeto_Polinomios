@@ -148,11 +148,11 @@ la resta (-), el producto (*) y la composición (&)'''
 	def coeficientes(self):
 		''' Retorna una lista con los coeficientes del polinomio en el orden establecido por "ordenDescendente" '''
 		return [coef for coef in (self.__vector if not self.__ordenDescendente else self.__vector[::-1])]
-	
+
 	def obtenerOrdenDescendente(self):
 		''' Permite obtener el valor de "ordenDescendente" '''
 		return self.__ordenDescendente
-	
+
 	def establecerOrdenDescendente(self, descendente):
 		''' Permite establecer el valor de "ordenDescendente" '''
 		self.__ordenDescendente = descendente
@@ -345,11 +345,12 @@ la resta (-), el producto (*) y la composición (&)'''
 		if gradoPolinomio > gradoBase:
 			raise ValueError("El grado de la base debe de ser igual o mayor que el del polinomio")
 
-		
+
 		estandar2base = np.zeros((gradoBase + 1, len(base))) # Matriz que transforma de la base estandar a la nueva base
 		coefPolinomio = poli.coeficientes() if not poli.ordenDescendente else poli.coeficientes()[::-1]
-		
-		# Llena los coeficientes con cero si el rango del polinomio es menor que el de la base, necesario para hacer la multiplicacion matricial
+
+		# Llena los coeficientes con cero si el rango del polinomio es menor que el de la base,
+		#  necesario para hacer la multiplicacion matricial
 		candidato = np.zeros(gradoBase + 1)
 		candidato[: len(coefPolinomio)] = coefPolinomio
 
@@ -367,37 +368,39 @@ la resta (-), el producto (*) y la composición (&)'''
 		newCoef = np.matmul(base2estandar, candidato) # Realiza la multiplicacion matricial
 
 		return newCoef.tolist() # Regresa los datos como una lista de numeros.
-	
-	
+
+
 	@staticmethod
 	def ortogonalizar( base, normalizar=False, productoInterno=lambda a, b: Polinomio.productoInternoIntegral(a, b) ):
 		''' Regresa un conjunto de polinomios ortogonales a partir de una base dada '''
 
 		# El primer elemento de la nueva base es el mismo que el de la original
 		nuevaBase = [base[0]]
-        
+
         #Procedimiento de Gram-Schmidt
 		for i in range(1, len(base)):
 			candidato = base[i]
 			# Calcula la proyeccion de los polinomios de la base sobre la nueva base
 			for j in range(i):
 				candidato -= Polinomio.__proj(nuevaBase[j], base[i], productoInterno)
-            
+
 			nuevaBase.append(candidato) # Añade el nuevo polinomio calculado
 
 		# Normaliza la base en caso de ser necesario
 		if normalizar:
-			nuevaBase = [base * (1/productoInterno(base, base))**(1/2) for base in nuevaBase]    
+			nuevaBase = [base * (1/productoInterno(base, base))**(1/2) for base in nuevaBase]
 
 		return nuevaBase
 
 
-	# Regresa el valor del producto interno entre dos polinomios de la forma <p,q> = ∫p(x)q(x)w(x)dx desde a hasta b, tanto los limites de integracion como la funcion de poderacion son editables
+	# Regresa el valor del producto interno entre dos polinomios de la forma < 'p' , 'q' > = ∫p(x)q(x)w(x)dx
+	# desde 'limiteInferior' hasta 'limiteSuperior', tanto los limites de integracion
+	# como la funcion de poderacion son editables
 	@staticmethod
 	def productoInternoIntegral( p, q, limiteInferior=-1, limiteSuperior=1, ponderacion=lambda x: 1 ):
 		''' Calcula el producto interno entre polinomios con la definicion integral '''
 		polinomioInterno = p * q # p(x)q(x)
-        
+
 		# Integra p(x)q(x)w(x) entre los limites dados
 		resultado = integrate.quad(
             lambda x: polinomioInterno.evaluar(x) * ponderacion(x),
@@ -406,7 +409,7 @@ la resta (-), el producto (*) y la composición (&)'''
         )
 
 		# La funcion quad de scipy regresa un tupla con dos valores: la integral y el error, regresa solo la integral
-		return resultado[0] 
+		return resultado[0]
 
 	# Metodo para uso interno del modulo, usado en ortogonalizar()
 	@staticmethod
